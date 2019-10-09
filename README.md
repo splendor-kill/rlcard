@@ -95,7 +95,7 @@ We provide a complexity estimation for the games on several aspects. **InfoSet N
 
 ## Evaluation
 The perfomance is measured by winning rate through tournaments. Example outputs are as follows:
-![Learning Curves](docs/imgs/curves.png "Learning Curves")
+![Learning Curves](http://rlcard.org/imgs/curves.png "Learning Curves")
 
 ## Contributing
 Contribution to this project is greatly appreciated! Please create a issue for feedbacks/bugs. If you want to contribute codes, pleast contact <daochen.zha@tamu.edu> or <khlai037@tamu.edu>.

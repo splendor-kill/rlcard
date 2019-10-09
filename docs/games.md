@@ -176,7 +176,6 @@ There are 38 actions in Mahjong.
 The reward is calculated by the terminal state of the game, where winning player is awarded as 1, losing players are punished as -1.
 And if no one win the game, then all players' reward will be 0.
 
-
 ## No-limit Texas Hold'em
 No-limit Texas Hold'em has similar rule with Limit Texas Hold'em. But unlike in Limit Texas Hold'em game in which each player can only choose a fixed amount of raise and the number of raises is limited. In No-limit Texas Hold'em, The player may raise with at least the same amount as previous raised amount in the same round (or the minimum raise amount set before the game if none has raised), and up to the player's remaining stack. The number of raises is also unlimited.
 

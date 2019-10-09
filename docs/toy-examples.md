@@ -177,7 +177,7 @@ In Blackjack, the player will get a payoff at the end of the game: 1 if the play
 (under construction)
 
 ## Having Fun with Pretrained Leduc Model
-We have designed simple human interfaces to play against the pretrained model! Example of playing against Leduc Hold'em AI is as below:
+We have designed simple human interfaces to play against the pretrained model. Example of playing against Leduc Hold'em NFSP model is as below:
 ```python
 import rlcard
 
@@ -233,7 +233,7 @@ Agent 1: +++
 We also provide a running demo of a rule-based agent for UNO. Try it by running `examples/uno_human.py`.
 
 ## Leduc Hold'em as Single-Agent Environment
-We have wrraped the environment as single agent environment by assuming that other players play with pre-trained models. The interfaces are exactly same to OpenAI Gym. Thus, any single-agent algorithm can be connected to the environment. An example of Leduc Hold'em is as below:
+We have wrraped the environment as single agent environment by assuming that other players play with pre-trained models. The interfaces are exactly the same to OpenAI Gym. Thus, any single-agent algorithm can be connected to the environment. An example of Leduc Hold'em is as below:
 ```python
 import tensorflow as tf
 import numpy as np

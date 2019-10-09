@@ -1,19 +1,25 @@
 # RLCard: A Toolkit for Reinforcement Learning in Card Games
 [![Build Status](https://travis-ci.org/datamllab/RLCard.svg?branch=master)](https://travis-ci.org/datamllab/RLCard)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/248eb15c086748a4bcc830755f1bd798)](https://www.codacy.com/manual/daochenzha/rlcard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=datamllab/rlcard&amp;utm_campaign=Badge_Grade)
-[![Coverage Status](https://coveralls.io/repos/github/datamllab/rlcard/badge.svg?branch=master)](https://coveralls.io/github/datamllab/rlcard?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/datamllab/rlcard/badge.svg)](https://coveralls.io/github/datamllab/rlcard?branch=master)
 
 RLCard is a toolkit for Reinforcement Learning (RL) in card games. It supports multiple card environments with easy-to-use interfaces. The goal of RLCard is to bridge reinforcement learning and imperfect information games, and push forward the research of reinforcement learning in domains with multiple agents, large state and action space, and sparse reward. RLCard is developed by [DATA Lab](http://faculty.cs.tamu.edu/xiahu/) at Texas A&M University.
 
 *   Official Website: [http://www.rlcard.org](http://www.rlcard.org)
 
 ## Installation
-Make sure that you have **Python 3.5+** and **pip** installed. You can install `rlcard` with `pip` as follow:
+Make sure that you have **Python 3.5+** and **pip** installed. We recommend installing `rlcard` with `pip` as follow:
 
 ```
 git clone https://github.com/datamllab/rlcard.git
 cd rlcard
 pip install -e .
+```
+
+Or you can directly install the package with
+
+```
+pip install rlcard
 ```
 
 ## Examples
@@ -94,11 +100,11 @@ We provide a complexity estimation for the games on several aspects. **InfoSet N
 | Sheng Ji ([wiki](https://en.wikipedia.org/wiki/Sheng_ji), [baike](https://baike.baidu.com/item/%E5%8D%87%E7%BA%A7/3563150))                                                                    | 10^157 ~ 10^165 | 10^61             | 10^11       | -               | Developing |
 
 ## Evaluation
-The perfomance is measured by winning rate through tournaments. Example outputs are as follows:
+The perfomance is measured by winning rates through tournaments. Example outputs are as follows:
 ![Learning Curves](http://rlcard.org/imgs/curves.png "Learning Curves")
 
 ## Contributing
-Contribution to this project is greatly appreciated! Please create a issue for feedbacks/bugs. If you want to contribute codes, pleast contact <daochen.zha@tamu.edu> or <khlai037@tamu.edu>.
+Contribution to this project is greatly appreciated! Please create a issue for feedbacks/bugs. If you want to contribute codes, pleast contact [daochen.zha@tamu.edu](mailto:daochen.zha@tamu.edu) or [khlai037@tamu.edu](khlai037@tamu.edu).
 
 ## Acknowledgements
 We would like to thank JJ World Network Technology Co.,LTD for the technical support.

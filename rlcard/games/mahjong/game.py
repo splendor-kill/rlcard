@@ -117,7 +117,7 @@ class MahjongGame(object):
         return 38
 
     def get_player_num(self):
-        ''' return the number of players in Mahjong 
+        ''' return the number of players in Mahjong
 
         returns:
             (int): the number of players in the game

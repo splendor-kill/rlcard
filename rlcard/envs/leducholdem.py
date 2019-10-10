@@ -10,7 +10,7 @@ from rlcard import models
 
 
 class LeducholdemEnv(Env):
-    ''' Limitholdem Environment
+    ''' Leduc Hold'em Environment
     '''
 
     def __init__(self, allow_step_back=False):
@@ -58,11 +58,12 @@ class LeducholdemEnv(Env):
         hands = [self.game.players[i].hand.get_index() for i in range(self.player_num)]
         print('')
 
-        if not self.game.players[self.active_player].status == 'fold':
+        if not self.game.players[self.active_player].status == 'folded':
             for i in range(self.player_num):
                 if i != self.active_player:
-                    print('===============     Agent {}    ==============='.format(i))
-                    print_card(hands[i])
+                    if not self.game.players[i].status == 'fold':
+                        print('===============     Agent {}    ==============='.format(i))
+                        print_card(hands[i])
 
         print('===============     Result     ===============')
         if payoffs[player] > 0:

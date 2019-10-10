@@ -94,7 +94,8 @@ class Env(object):
             done = True
             if self.human_mode:
                 self.print_result(self.active_player)
-            self.reset()
+            state = self.reset()
+            return state, reward, done
 
         elif self.human_mode:
             self.print_state(self.active_player)

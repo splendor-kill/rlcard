@@ -359,7 +359,7 @@ def assign_task(task_num, process_num):
         process_num (int): An integer of the number of processes
 
     Returns:
-        per_stasks (list): An list of the numbers of tasks assigned to processes 
+        per_stasks (list): An list of the numbers of tasks assigned to processes
     '''
     per_tasks = [task_num // process_num] * process_num
     per_tasks[0] += (task_num % process_num)

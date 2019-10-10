@@ -100,8 +100,8 @@ class DQNAgent(object):
 
         # Create estimators
         #with tf.variable_scope(scope):
-        self.q_estimator = Estimator(scope=self.scope+"/q", action_num=action_num, learning_rate=learning_rate, state_shape=state_shape, mlp_layers=mlp_layers)
-        self.target_estimator = Estimator(scope=self.scope+"/target_q", action_num=action_num, learning_rate=learning_rate, state_shape=state_shape, mlp_layers=mlp_layers)
+        self.q_estimator = Estimator(scope=self.scope+"_q", action_num=action_num, learning_rate=learning_rate, state_shape=state_shape, mlp_layers=mlp_layers)
+        self.target_estimator = Estimator(scope=self.scope+"_target_q", action_num=action_num, learning_rate=learning_rate, state_shape=state_shape, mlp_layers=mlp_layers)
 
         # Create normalizer
         self.normalizer = Normalizer()

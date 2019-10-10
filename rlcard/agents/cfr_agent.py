@@ -100,7 +100,7 @@ class CFRAgent():
 
     def regret_matching(self, obs):
         ''' Apply regret matching
- 
+
         Args:
             obs (string): The state_str
         '''

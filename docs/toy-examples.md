@@ -1,5 +1,5 @@
 # Toy Examples
-In this document, we provide some toy examples for getting started. All the examples shown in this document and even more examples are available in [examples/](../examples).
+In this document, we provide some toy examples for getting started. All the examples in this document and even more examples are available in [examples/](../examples).
 
 ## Playing with Random Agents
 We have set up a random agent that can play randomly on each environment. An example of applying a random agent on Blackjack is as follow:
@@ -388,42 +388,36 @@ In the above example, the performance is measured by playing against a pre-train
 ```
 Iteration 0
 ########## Evaluation ##########
-Iteration: 0 Average reward is -1.1613
+Iteration: 0 Average reward is -1.0494
 Iteration 100
 ########## Evaluation ##########
-Iteration: 100 Average reward is -0.6366
+Iteration: 100 Average reward is -0.3044
 Iteration 200
 ########## Evaluation ##########
-Iteration: 200 Average reward is -0.4424
+Iteration: 200 Average reward is -0.2224
 Iteration 300
 ########## Evaluation ##########
-Iteration: 300 Average reward is -0.0328
+Iteration: 300 Average reward is 0.0053
 Iteration 400
 ########## Evaluation ##########
-Iteration: 400 Average reward is -0.0589
+Iteration: 400 Average reward is -0.0163
 Iteration 500
 ########## Evaluation ##########
-Iteration: 500 Average reward is -0.0969
+Iteration: 500 Average reward is -0.0715
 Iteration 600
 ########## Evaluation ##########
-Iteration: 600 Average reward is -0.0247
+Iteration: 600 Average reward is -0.0435
 Iteration 700
 ########## Evaluation ##########
-Iteration: 700 Average reward is -0.062
+Iteration: 700 Average reward is -0.0347
 Iteration 800
 ########## Evaluation ##########
-Iteration: 800 Average reward is 0.0278
+Iteration: 800 Average reward is 0.123
 Iteration 900
 ########## Evaluation ##########
-Iteration: 900 Average reward is 0.0124
+Iteration: 900 Average reward is 0.0215
 Iteration 1000
 ########## Evaluation ##########
-Iteration: 1000 Average reward is -0.0991
-Iteration 1100
-########## Evaluation ##########
-Iteration: 1100 Average reward is -0.0509
-Iteration 1200
-########## Evaluation ##########
-Iteration: 1200 Average reward is 0.0434
+Iteration: 1000 Average reward is -0.0322
 ```
-We observe that CFR becomes stronger than NFSP after 1200 iterations. In our experiments, we observe CFR has better performance than NFSP. However, CFR requires traversal of the game tree, which is infeasible in large environments.
+We observe that CFR achieves simialr performance as NFSP. However, CFR requires traversal of the game tree, which is infeasible in large environments.

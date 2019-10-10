@@ -79,6 +79,7 @@ class DQNAgent(object):
             learning_rate (float): The learning rate of the DQN agent.
         '''
         self.sess = sess
+        self.scope = scope
         self.replay_memory_init_size = replay_memory_init_size
         self.update_target_estimator_every = update_target_estimator_every
         self.discount_factor = discount_factor
@@ -99,8 +100,8 @@ class DQNAgent(object):
 
         # Create estimators
         #with tf.variable_scope(scope):
-        self.q_estimator = Estimator(scope="q", action_num=action_num, learning_rate=learning_rate, state_shape=state_shape, mlp_layers=mlp_layers)
-        self.target_estimator = Estimator(scope="target_q", action_num=action_num, learning_rate=learning_rate, state_shape=state_shape, mlp_layers=mlp_layers)
+        self.q_estimator = Estimator(scope=self.scope+"/q", action_num=action_num, learning_rate=learning_rate, state_shape=state_shape, mlp_layers=mlp_layers)
+        self.target_estimator = Estimator(scope=self.scope+"/target_q", action_num=action_num, learning_rate=learning_rate, state_shape=state_shape, mlp_layers=mlp_layers)
 
         # Create normalizer
         self.normalizer = Normalizer()
@@ -215,6 +216,20 @@ class DQNAgent(object):
         '''
         self.memory.save(self.normalizer.normalize(state), action, reward, self.normalizer.normalize(next_state), done)
 
+    def copy_params_op(self, global_vars):
+        ''' Copys the variables of two estimator to others.
+
+        Args:
+            global_vars (list): A list of tensor
+        '''
+        self_vars = tf.contrib.slim.get_variables(scope=self.scope+'/', collection=tf.GraphKeys.TRAINABLE_VARIABLES)
+        update_ops = []
+        for v1, v2 in zip(global_vars, self_vars):
+            op = v2.assign(v1)
+            update_ops.append(op)
+        self.sess.run(update_ops)
+
+
 
 class Normalizer(object):
     ''' Normalizer class that tracks the running statistics for normlization
@@ -277,6 +292,10 @@ class Estimator():
         with tf.variable_scope(scope):
             # Build the graph
             self._build_model()
+        # Optimizer Parameters from original paper
+        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, name='dqn_adam')
+
+        self.train_op = self.optimizer.minimize(self.loss, global_step=tf.contrib.framework.get_global_step())
 
     def _build_model(self):
         ''' Build an MLP model.
@@ -306,11 +325,6 @@ class Estimator():
         # Calculate the loss
         self.losses = tf.squared_difference(self.y_pl, self.action_predictions)
         self.loss = tf.reduce_mean(self.losses)
-
-        # Optimizer Parameters from original paper
-        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, name='dqn_adam')
-
-        self.train_op = self.optimizer.minimize(self.loss, global_step=tf.contrib.framework.get_global_step())
 
     def predict(self, sess, s):
         ''' Predicts action values.

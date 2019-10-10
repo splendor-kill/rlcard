@@ -350,17 +350,17 @@ def remove_illegal(action_probs, legal_actions):
         probs /= sum(probs)
     return probs
 
-def make_copy_params_op(v1_list, v2_list):
-    v1_list = list(sorted(v1_list, key=lambda v: v.scope))
-    v2_list = list(sorted(v2_list, key=lambda v: v.scope))
-
-    update_ops = []
-    for v1, v2 in zip(v1_list, v2_list):
-        op = v2.assign(v1)
-        update_ops.append(op)
-    return update_ops
 
 def assign_task(task_num, process_num):
+    ''' Assign the number of tasks according to the number of processes
+
+    Args:
+        task_num (int): An integer of assignments of tasks
+        process_num (int): An integer of the number of processes
+
+    Returns:
+        per_stasks (list): An list of the numbers of tasks assigned to processes 
+    '''
     per_tasks = [task_num // process_num] * process_num
     per_tasks[0] += (task_num % process_num)
     return per_tasks

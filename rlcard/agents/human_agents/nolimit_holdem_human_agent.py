@@ -28,7 +28,10 @@ class HumanAgent(object):
         action = int(input('>> You choose action (integer): '))
         while action < 0 or action >= len(state['legal_actions']):
             print('Action illegal...')
-            action = int(input('>> Re-choose action (integer): '))
+            try:
+                action = int(input('>> Re-choose action (integer): '))
+            except ValueError:
+                continue
         return state['raw_legal_actions'][action]
 
     def eval_step(self, state):

@@ -1,4 +1,4 @@
-''' A toy example of playing against pretrianed AI on Leduc Hold'em
+''' A toy example of playing NL Hold'em
 '''
 from rlcard.agents import RandomAgent
 
@@ -8,7 +8,7 @@ from rlcard.agents import NolimitholdemHumanAgent as HumanAgent
 from rlcard.utils import print_card
 
 # Make environment
-env = rlcard.make('no-limit-holdem')
+env = rlcard.make('no-limit-holdem', config={'dealer_id': None})
 
 human_agent = HumanAgent(env.num_actions)
 human_agent2 = HumanAgent(env.num_actions)
@@ -18,7 +18,7 @@ env.set_agents([human_agent, human_agent2])
 
 
 while (True):
-    print(">> Start a new game")
+    print(f">> Start a new game, dealer: {env.game.dealer_id}")
 
     trajectories, payoffs = env.run(is_training=False)
     # If the human does not take the final action, we need to
@@ -39,7 +39,11 @@ while (True):
     for hands in env.get_perfect_information()['hand_cards']:
         print_card(hands)
 
+    print('===============     Public Cards    ===============')
+    print_card(state['public_cards'])
+
     print('===============     Result     ===============')
+    print(f"cur player: {env.get_player_id()}")
     if payoffs[0] > 0:
         print('You win {} chips!'.format(payoffs[0]))
     elif payoffs[0] == 0:

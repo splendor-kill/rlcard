@@ -181,6 +181,8 @@ class NolimitholdemGame(Game):
                     self.round_counter += 1
 
             self.round_counter += 1
+            if self.num_players == 2 and self.round_counter >= 1:
+                self.game_pointer = (self.game_pointer + 1) % self.num_players
             self.round.start_new_round(self.game_pointer)
 
         state = self.get_state(self.game_pointer)

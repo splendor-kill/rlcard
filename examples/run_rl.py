@@ -29,6 +29,8 @@ def train(args):
         args.env,
         config={
             'seed': args.seed,
+            'game_num_players': args.num_players,
+            "chips_for_each": args.chips,
         }
     )
 
@@ -144,6 +146,16 @@ if __name__ == '__main__':
         default=42,
     )
     parser.add_argument(
+        '--num_players',
+        type=int,
+        default=3,
+    )
+    parser.add_argument(
+        "--chips",
+        type=int,
+        default=400,
+    )
+    parser.add_argument(
         '--num_episodes',
         type=int,
         default=5000,
@@ -161,7 +173,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--log_dir',
         type=str,
-        default='experiments/leduc_holdem_dqn_result/',
+        default='experiments/',
     )
     
     parser.add_argument(
@@ -177,6 +189,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    args.log_dir = os.path.join(args.log_dir, f'{args.env}_{args.algorithm}_result')
     os.environ["CUDA_VISIBLE_DEVICES"] = args.cuda
     train(args)
 

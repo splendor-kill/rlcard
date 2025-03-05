@@ -31,7 +31,10 @@ def train(args):
         config={
             'seed': args.seed,
             'game_num_players': args.num_players,
-            "chips_for_each": args.chips,
+            'chips_for_each': args.chips,
+            'state_version': args.state_version,
+            'reward_version': args.reward_version,
+            'reverse_blind': args.reverse_blind,
         }
     )
 
@@ -41,10 +44,11 @@ def train(args):
         if args.load_checkpoint_path != "":
             agent = DQNAgent.from_checkpoint(checkpoint=torch.load(args.load_checkpoint_path))
         else:
+            layers = [512, 512, 256, 256, 128, 128, 64] if args.state_version == 1 else [64, 64]
             agent = DQNAgent(
                 num_actions=env.num_actions,
                 state_shape=env.state_shape[0],
-                mlp_layers=[ 512, 512, 256, 256, 128, 128, 64 ],
+                mlp_layers=layers,
                 device=device,
                 save_path=args.log_dir,
                 save_every=args.save_every,
@@ -80,7 +84,7 @@ def train(args):
             trajectories, payoffs = env.run(is_training=True)
 
             # Reorganaize the data to be state, action, reward, next_state, done
-            trajectories = reorganize(trajectories, payoffs, env.game.init_chips)
+            trajectories = reorganize(trajectories, payoffs)
 
             # Feed transitions into agent memory, and train the agent
             # Here, we assume that DQN always plays the first position
@@ -156,6 +160,17 @@ if __name__ == '__main__':
         type=int,
         default=400,
     )
+    parser.add_argument(
+        "--reward_version",
+        type=int,
+        default=0,
+    )
+    parser.add_argument(
+        "--state_version",
+        type=int,
+        default=0,
+    )
+    parser.add_argument('--reverse_blind', action='store_true')
     parser.add_argument(
         '--num_episodes',
         type=int,

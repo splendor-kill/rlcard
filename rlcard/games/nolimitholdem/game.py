@@ -36,6 +36,7 @@ class NolimitholdemGame(Game):
 
         # If None, the dealer will be randomly chosen
         self.dealer_id = None
+        self.reverse_blind = False  # True if the dealer is the big blind (like slumbot), False if the dealer is the small blind
 
     def configure(self, game_config):
         """
@@ -46,6 +47,10 @@ class NolimitholdemGame(Game):
         # must have num_players length
         self.init_chips = [game_config['chips_for_each']] * game_config["game_num_players"]
         self.dealer_id = game_config['dealer_id']
+        self.small_blind = game_config['small_blind']
+        self.big_blind = 2 * self.small_blind
+        self.reverse_blind = game_config['reverse_blind']
+
 
     def init_game(self):
         """
@@ -181,7 +186,7 @@ class NolimitholdemGame(Game):
                     self.round_counter += 1
 
             self.round_counter += 1
-            if self.num_players == 2 and self.round_counter >= 1:
+            if self.reverse_blind and self.num_players == 2 and self.round_counter >= 1:
                 self.game_pointer = (self.game_pointer + 1) % self.num_players
             self.round.start_new_round(self.game_pointer)
 

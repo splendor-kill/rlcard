@@ -12,6 +12,8 @@ DEFAULT_GAME_CONFIG = {
         'game_num_players': 2,
         'chips_for_each': 100,
         'dealer_id': None,
+        'reverse_blind': False,
+        'small_blind': 1,
         }
 
 class NolimitholdemEnv(Env):
@@ -26,7 +28,12 @@ class NolimitholdemEnv(Env):
         self.game = Game()
         super().__init__(config)
         self.actions = Action
-        self.state_shape = [[997] for _ in range(self.num_players)]
+        self.reward_ver = config.get('reward_version', 0)
+        assert 0 <= self.reward_ver <= 1
+        self.state_ver = config.get('state_version', 0)
+        assert 0 <= self.state_ver <= 1
+        shape0 = 997 if self.state_ver == 1 else 54
+        self.state_shape = [[shape0] for _ in range(self.num_players)]
         self.action_shape = [None for _ in range(self.num_players)]
         # for raise_amount in range(1, self.game.init_chips+1):
         #     self.actions.append(raise_amount)
@@ -71,7 +78,19 @@ class NolimitholdemEnv(Env):
         legal_actions = OrderedDict({action.value: None for action in state['legal_actions']})
         extracted_state['legal_actions'] = legal_actions
 
-        obs = self._build_obs(state, self.action_recorder_extra)
+        if self.state_ver == 0:
+            public_cards = state['public_cards']
+            hand = state['hand']
+            my_chips = state['my_chips']
+            all_chips = state['all_chips']
+            cards = public_cards + hand
+            idx = [self.card2index[card] for card in cards]
+            obs = np.zeros(54)
+            obs[idx] = 1
+            obs[52] = float(my_chips)
+            obs[53] = float(max(all_chips))
+        elif self.state_ver == 1:
+            obs = self._build_obs(state, self.action_recorder_extra)
         extracted_state['obs'] = obs
 
         extracted_state['raw_obs'] = state
@@ -86,7 +105,10 @@ class NolimitholdemEnv(Env):
         Returns:
            payoffs (list): list of payoffs
         '''
-        return np.array(self.game.get_payoffs())
+        payoffs = np.array(self.game.get_payoffs())
+        if self.reward_ver == 1:
+            payoffs = np.sign(payoffs) + payoffs / self.game.init_chips
+        return payoffs
 
     def _decode_action(self, action_id):
         ''' Decode the action for applying to the game
@@ -99,8 +121,11 @@ class NolimitholdemEnv(Env):
         '''
         legal_actions = self.game.get_legal_actions()
         if self.actions(action_id) not in legal_actions:
-            print("Tried non legal action", action_id, self.actions(action_id), legal_actions)
-            return Action.FOLD
+            if Action.CHECK in legal_actions:
+                return Action.CHECK
+            else:
+                print("Tried non legal action", action_id, self.actions(action_id), legal_actions)
+                return Action.FOLD
         return self.actions(action_id)
 
     def get_perfect_information(self):

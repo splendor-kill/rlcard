@@ -360,11 +360,13 @@ class Estimator(object):
         self.qnet = qnet
         self.qnet.eval()
 
+        total_params = 0
         # initialize the weights using Xavier init
         for p in self.qnet.parameters():
+            total_params += p.numel()
             if len(p.data.shape) > 1:
                 nn.init.xavier_uniform_(p.data)
-
+        print(f"Total parameters: {total_params}")
         # set up loss function
         self.mse_loss = nn.MSELoss(reduction='mean')
 

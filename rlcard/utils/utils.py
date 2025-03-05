@@ -150,7 +150,7 @@ def print_card(cards):
     for line in lines:
         print ('   '.join(line))
 
-def reorganize(trajectories, payoffs):
+def reorganize(trajectories, payoffs, init_chips=None):
     ''' Reorganize the trajectory to make it RL friendly
 
     Args:
@@ -168,6 +168,9 @@ def reorganize(trajectories, payoffs):
         for i in range(0, len(trajectories[player])-2, 2):
             if i ==len(trajectories[player])-3:
                 reward = payoffs[player]
+                if init_chips is not None:
+                    s = np.sign(reward)
+                    reward = s + reward / init_chips[player]
                 done =True
             else:
                 reward, done = 0, False

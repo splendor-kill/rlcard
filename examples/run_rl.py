@@ -1,5 +1,6 @@
 ''' An example of training a reinforcement learning agent on the environments in RLCard
 '''
+import datetime
 import os
 import argparse
 
@@ -20,7 +21,7 @@ def train(args):
 
     # Check whether gpu is available
     device = get_device()
-        
+
     # Seed numpy, torch, random
     set_seed(args.seed)
 
@@ -43,10 +44,10 @@ def train(args):
             agent = DQNAgent(
                 num_actions=env.num_actions,
                 state_shape=env.state_shape[0],
-                mlp_layers=[64,64],
+                mlp_layers=[ 512, 512, 256, 256, 128, 128, 64 ],
                 device=device,
                 save_path=args.log_dir,
-                save_every=args.save_every
+                save_every=args.save_every,
             )
 
     elif args.algorithm == 'nfsp':
@@ -79,7 +80,7 @@ def train(args):
             trajectories, payoffs = env.run(is_training=True)
 
             # Reorganaize the data to be state, action, reward, next_state, done
-            trajectories = reorganize(trajectories, payoffs)
+            trajectories = reorganize(trajectories, payoffs, env.game.init_chips)
 
             # Feed transitions into agent memory, and train the agent
             # Here, we assume that DQN always plays the first position
@@ -188,8 +189,7 @@ if __name__ == '__main__':
         default=-1)
 
     args = parser.parse_args()
-
-    args.log_dir = os.path.join(args.log_dir, f'{args.env}_{args.algorithm}_result')
+    now = datetime.datetime.now()
+    args.log_dir = os.path.join(args.log_dir, f"{args.env}_{args.algorithm}_{now.strftime('%Y%m%d_%H%M%S')}")
     os.environ["CUDA_VISIBLE_DEVICES"] = args.cuda
     train(args)
-

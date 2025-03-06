@@ -329,14 +329,6 @@ class DQNAgent(object):
         '''
         torch.save(self.checkpoint_attributes(), os.path.join(path, filename))
 
-    def export_predictor(self, path):
-        ''' Export the predictor
-
-        Args:
-            path (str): the path to save the model
-        '''
-        torch.save(self.q_estimator.qnet.state_dict(), path)
-
 
 class Estimator(object):
     '''
@@ -467,17 +459,19 @@ class Estimator(object):
 
 
 class EstimatorNetwork(nn.Module):
-    ''' The function approximation network for Estimator
-        It is just a series of tanh layers. All in/out are torch.tensor
+    ''' Q-Value Estimator neural network with Transformer architecture.
     '''
 
-    def __init__(self, num_actions=2, state_shape=None, mlp_layers=None):
+    def __init__(self, num_actions=2, state_shape=None, mlp_layers=None, d_model=128, nhead=8, num_layers=2):
         ''' Initialize the Q network
 
         Args:
-            num_actions (int): number of legal actions
-            state_shape (list): shape of state tensor
-            mlp_layers (list): output size of each fc layer
+            num_actions (int): Number of legal actions
+            state_shape (list): Shape of state tensor
+            mlp_layers (list): Output size of each fc layer
+            d_model (int): Dimension of Transformer embeddings
+            nhead (int): Number of attention heads
+            num_layers (int): Number of Transformer encoder layers
         '''
         super(EstimatorNetwork, self).__init__()
 
@@ -485,23 +479,57 @@ class EstimatorNetwork(nn.Module):
         self.state_shape = state_shape
         self.mlp_layers = mlp_layers
 
-        # build the Q network
-        layer_dims = [np.prod(self.state_shape)] + self.mlp_layers
-        fc = [nn.Flatten()]
-        fc.append(nn.BatchNorm1d(layer_dims[0]))
-        for i in range(len(layer_dims)-1):
-            fc.append(nn.Linear(layer_dims[i], layer_dims[i+1], bias=True))
-            fc.append(nn.Tanh())
-        fc.append(nn.Linear(layer_dims[-1], self.num_actions, bias=True))
-        self.fc_layers = nn.Sequential(*fc)
+        # Transformer encoder layer
+        self.embedding_dim = d_model
+        self.transformer_encoder = nn.TransformerEncoder(
+            nn.TransformerEncoderLayer(
+                d_model=d_model,
+                nhead=nhead,
+                dim_feedforward=4 * d_model,
+                dropout=0.1,
+                activation='gelu'
+            ),
+            num_layers=num_layers
+        )
+
+        # Projection to Transformer input dimension
+        self.state_proj = nn.Linear(np.prod(self.state_shape), d_model)
+
+        # Final MLP to map transformer output to action space
+        mlp_dims = [d_model] + self.mlp_layers
+        fc_layers = []
+        for i in range(len(mlp_dims) - 1):
+            fc_layers.append(nn.Linear(mlp_dims[i], mlp_dims[i+1]))
+            fc_layers.append(nn.GELU())
+        fc_layers.append(nn.Linear(mlp_dims[-1], self.num_actions))  # Output Q-values
+        self.fc_layers = nn.Sequential(*fc_layers)
 
     def forward(self, s):
-        ''' Predict action values
+        ''' Predict action values using Transformer-enhanced Q-network.
 
         Args:
             s  (Tensor): (batch, state_shape)
+
+        Returns:
+            Tensor: (batch, num_actions) Q-values
         '''
+        batch_size = s.shape[0]
+
+        # Flatten and project state features to Transformer embedding size
+        s = s.view(batch_size, -1)  # Flatten
+        s = self.state_proj(s)  # (batch, d_model)
+
+        # Transformer expects (seq_len, batch, d_model), so we add a sequence dimension
+        s = s.unsqueeze(0)  # (1, batch, d_model)
+
+        # Transformer Encoder
+        s = self.transformer_encoder(s)  # (1, batch, d_model)
+        s = s.squeeze(0)  # Remove seq_len dimension (batch, d_model)
+
+        # Pass through MLP layers
         return self.fc_layers(s)
+
+
 
 class Memory(object):
     ''' Memory for saving transitions

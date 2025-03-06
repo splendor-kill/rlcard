@@ -121,8 +121,8 @@ class NolimitholdemEnv(Env):
         '''
         legal_actions = self.game.get_legal_actions()
         if self.actions(action_id) not in legal_actions:
-            if Action.CHECK in legal_actions:
-                return Action.CHECK
+            if Action.CHECK_CALL in legal_actions:
+                return Action.CHECK_CALL
             else:
                 print("Tried non legal action", action_id, self.actions(action_id), legal_actions)
                 return Action.FOLD

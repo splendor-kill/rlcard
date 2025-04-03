@@ -29,7 +29,7 @@ class NolimitholdemEnv(Env):
         super().__init__(config)
         self.actions = Action
         self.reward_ver = config.get('reward_version', 0)
-        assert 0 <= self.reward_ver <= 1
+        assert 0 <= self.reward_ver <= 4
         self.state_ver = config.get('state_version', 0)
         assert 0 <= self.state_ver <= 1
         shape0 = 997 if self.state_ver == 1 else 54
@@ -108,6 +108,42 @@ class NolimitholdemEnv(Env):
         payoffs = np.array(self.game.get_payoffs())
         if self.reward_ver == 1:
             payoffs = np.sign(payoffs) + payoffs / self.game.init_chips
+        elif self.reward_ver == 2:
+            payoffs = payoffs / self.game.init_chips
+        elif self.reward_ver == 3:
+            def f(x, a=0, lambda_=1, c=1, eta=1, d=132):
+                assert lambda_ > 0 and eta > 0 and c > 0 and d > 0
+                # lambda_: 调节正向奖励的敏感度
+                # eta: 调节负向惩罚的强度
+                # c: 控制正向区域的曲率（c↑ 奖励越线性）
+                # d: 控制负向区域的衰减速率（d↓ 惩罚越陡峭）
+                # 参数校准:
+                # 假设原始收益 x ∈ [−400, 400]，期望阈值 a=1 (一个小盲)，λ=1，η=1，则:
+                # 若我们希望 x=400 时奖励为 K，则有 λln⁡(1+399/c)=K，则 c=(e^K-1)/399，当K=6时c~=1；
+                # 若我们希望 x=-400 时惩罚为 −M ，则有 −η(e^(401/d)−1)=−M，则 d=401/ln(M+1)，当M=20时d~=132；
+                # return lambda_ * np.log(1 + (x - a) / c) if x >= a else -eta * (np.exp((a - x) / d) - 1)
+                # return np.where(
+                #     x >= a, lambda_ * np.log(np.maximum(1 + (x - a) / c, 1e-10)), -eta * (np.exp((a - x) / d) - 1)
+                # )
+                return np.piecewise(
+                    x,
+                    [x >= a, x < a],
+                    [lambda x: lambda_ * np.log(1 + (x - a) / c), lambda x: -eta * (np.exp((a - x) / d) - 1)],
+                )
+
+            payoffs = f(payoffs)
+        elif self.reward_ver == 4:
+            def f(x, a=0, k=1):
+                assert k > 0
+                # 此函数是关于a原点对称的
+                # k: 控制曲率, k↑ 曲线越弯
+                # 参数校准:
+                # 假设原始收益 x ∈ [−400, 400]，期望阈值 a=1 (一个小盲)，则:
+                # 若我们希望 x=400 时奖励为 C，则有 ln⁡(1+399k)/k=C，则要求C~=6时k~=1；
+
+                return np.sign(x - a) * np.log(1 + k * np.abs(x - a)) / k
+
+            payoffs = f(payoffs)
         return payoffs
 
     def _decode_action(self, action_id):

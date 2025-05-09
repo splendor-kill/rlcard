@@ -29,7 +29,7 @@ class NolimitholdemEnv(Env):
         super().__init__(config)
         self.actions = Action
         self.reward_ver = config.get('reward_version', 0)
-        assert 0 <= self.reward_ver <= 4
+        assert 0 <= self.reward_ver <= 5
         self.state_ver = config.get('state_version', 0)
         assert 0 <= self.state_ver <= 1
         shape0 = 997 if self.state_ver == 1 else 54
@@ -111,6 +111,8 @@ class NolimitholdemEnv(Env):
         elif self.reward_ver == 2:
             payoffs = payoffs / self.game.init_chips
         elif self.reward_ver == 3:
+            payoffs = np.sign(payoffs) * np.log(1 + np.abs(payoffs / self.game.init_chips))
+        elif self.reward_ver == 4:
             def f(x, a=0, lambda_=1, c=1, eta=1, d=132):
                 assert lambda_ > 0 and eta > 0 and c > 0 and d > 0
                 # lambda_: 调节正向奖励的敏感度
@@ -131,8 +133,8 @@ class NolimitholdemEnv(Env):
                     [lambda x: lambda_ * np.log(1 + (x - a) / c), lambda x: -eta * (np.exp((a - x) / d) - 1)],
                 )
 
-            payoffs = f(payoffs)
-        elif self.reward_ver == 4:
+            payoffs = f(payoffs, a=1)
+        elif self.reward_ver == 5:
             def f(x, a=0, k=1):
                 assert k > 0
                 # 此函数是关于a原点对称的

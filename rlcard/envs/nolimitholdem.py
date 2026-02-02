@@ -9,12 +9,12 @@ from rlcard.games.nolimitholdem import Game
 from rlcard.games.nolimitholdem.round import Action
 
 DEFAULT_GAME_CONFIG = {
-        'game_num_players': 2,
-        'chips_for_each': 100,
-        'dealer_id': None,
-        'reverse_blind': False,
-        'small_blind': 1,
-        }
+    'game_num_players': 2,
+    'chips_for_each': 100,
+    'dealer_id': None,
+    'reverse_blind': False,
+    'small_blind': 1,
+}
 
 class NolimitholdemEnv(Env):
     ''' Limitholdem Environment
@@ -146,6 +146,18 @@ class NolimitholdemEnv(Env):
                 return np.sign(x - a) * np.log(1 + k * np.abs(x - a)) / k
 
             payoffs = f(payoffs)
+        elif self.reward_ver == 6:
+            c = 20
+            delta_bb = payoffs / self.game.big_blind
+            payoffs = np.sign(delta_bb) * np.log1p(np.abs(delta_bb) / c)
+        elif self.reward_ver == 7:
+            c = 30
+            delta_bb = payoffs / self.game.big_blind
+            payoffs = np.tanh(delta_bb / c)
+        elif self.reward_ver == 8:
+            assert self.game.big_blind > 0
+            payoffs /= self.game.big_blind
+
         return payoffs
 
     def _decode_action(self, action_id):

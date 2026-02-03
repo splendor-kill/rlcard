@@ -29,7 +29,7 @@ class NolimitholdemEnv(Env):
         super().__init__(config)
         self.actions = Action
         self.reward_ver = config.get('reward_version', 0)
-        assert 0 <= self.reward_ver <= 5
+        assert 0 <= self.reward_ver <= 8
         self.state_ver = config.get('state_version', 0)
         assert 0 <= self.state_ver <= 1
         shape0 = 997 if self.state_ver == 1 else 54
